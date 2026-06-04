@@ -124,7 +124,7 @@ jobs:
       # -------------------------------
       - name: List Docker images
         run: docker images
-        
+
       - name: Trivy image scan (final container)
         uses: aquasecurity/trivy-action@v0.35.0
         with:
@@ -136,6 +136,7 @@ jobs:
           output: trivy-image-results.json
 
       - name: Upload image scan results
+        if: always()  # upload results even if scan fails
         uses: actions/upload-artifact@v4
         with:
           name: trivy-image-results
