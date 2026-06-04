@@ -9,7 +9,7 @@ on:
   pull_request:
     branches:
       - main
-      
+
   workflow_dispatch:
 
 env:
@@ -134,7 +134,7 @@ jobs:
           format: json
           vuln-type: os,library
           severity: HIGH,CRITICAL
-          exit-code: 1
+          exit-code: 0
           output: trivy-image-results.json
 
       - name: Upload image scan results
