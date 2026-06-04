@@ -1,174 +1,193 @@
-# Spring PetClinic Sample Application [![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml)[![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/gradle-build.yml)
+# Spring Petclinic Containerization & DevSecOps Pipeline
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
+## Overview
 
-## Understanding the Spring Petclinic application with a few diagrams
+This project demonstrates the containerization and secure CI/CD implementation of the Spring Petclinic application using GitHub Actions, Docker, SonarCloud, Trivy, and AWS ECR.
 
-See the presentation here:  
-[Spring Petclinic Sample Application (legacy slides)](https://speakerdeck.com/michaelisvy/spring-petclinic-sample-application?slide=20)
+A key focus of this project was implementing DevSecOps best practices through automated security scanning, branch-based security gates, and secretless AWS authentication using GitHub OpenID Connect (OIDC).
 
-> **Note:** These slides refer to a legacy, pre–Spring Boot version of Petclinic and may not reflect the current Spring Boot–based implementation.  
-> For up-to-date information, please refer to this repository and its documentation.
+---
 
+## Technologies
 
-## Run Petclinic locally
+* Java 21 (Eclipse Temurin)
+* Spring Boot
+* Maven Wrapper
+* Docker
+* GitHub Actions
+* SonarCloud
+* Trivy
+* AWS ECR
+* AWS IAM
+* GitHub OIDC
 
-Spring Petclinic is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/) or [Gradle](https://spring.io/guides/gs/gradle/).
-Java 17 or later is required for the build, and the application can run with Java 17 or newer.
+---
 
-You first need to clone the project locally:
+## Key Features
 
-```bash
-git clone https://github.com/spring-projects/spring-petclinic.git
-cd spring-petclinic
+### CI/CD Automation
+
+* Automated Maven build and testing
+* GitHub Actions workflow orchestration
+* Branch-aware deployment controls
+
+### Containerization
+
+* Multi-stage Docker build
+* Optimized runtime image
+* Reduced attack surface
+
+### Code Quality
+
+* SonarCloud static code analysis
+* Automated quality checks
+
+### Security
+
+* Trivy filesystem scanning
+* Trivy container image scanning
+* Security artifact retention
+* Branch-based security gates
+
+### AWS Integration
+
+* Secure image publishing to Amazon ECR
+* OIDC-based authentication
+* No long-lived AWS access keys
+
+---
+
+## Architecture
+
+Developer → GitHub Repository → GitHub Actions Workflow
+
+GitHub Actions Pipeline:
+
+1. Checkout Source
+2. Maven Build
+3. Unit Tests
+4. SonarCloud Analysis
+5. Trivy Filesystem Scan
+6. Docker Build
+7. Trivy Image Scan
+8. OIDC Authentication to AWS
+9. Push Container Image to ECR
+
+---
+
+## AWS Authentication using OIDC
+
+Traditional CI/CD pipelines commonly store AWS access keys as GitHub Secrets.
+
+This project uses GitHub OpenID Connect (OIDC) to eliminate long-lived AWS credentials and improve security.
+
+### Authentication Flow
+
+GitHub Actions
+↓
+GitHub OIDC Provider
+↓
+AWS Security Token Service (STS)
+↓
+AssumeRoleWithWebIdentity
+↓
+IAM Role
+↓
+Amazon ECR
+
+### Benefits
+
+* No AWS access keys stored in GitHub
+* Temporary credentials generated on demand
+* Reduced credential management overhead
+* Improved security posture
+* AWS security best practice
+
+### GitHub Permissions
+
+```yaml
+permissions:
+  id-token: write
+  contents: read
 ```
-If you are using Maven, you can start the application on the command-line as follows:
 
-```bash
-./mvnw spring-boot:run
-```
-With Gradle, the command is as follows:
+### AWS Login
 
-```bash
-./gradlew bootRun
-```
+GitHub Actions assumes an IAM role using OIDC and receives temporary credentials from AWS STS before pushing images to ECR.
 
-You can then access the Petclinic at <http://localhost:8080/>.
+---
 
-<img width="1042" alt="petclinic-screenshot" src="https://cloud.githubusercontent.com/assets/838318/19727082/2aee6d6c-9b8e-11e6-81fe-e889a5ddfded.png">
+## Branch-Based Security Gates
 
-You can, of course, run Petclinic in your favorite IDE.
-See below for more details.
+### develop Branch
 
-## Building a Container
+Purpose:
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+* Feature development
+* Security visibility
 
-```bash
-./mvnw spring-boot:build-image
-```
+Behavior:
 
-## In case you find a bug/suggested improvement for Spring Petclinic
+* Vulnerabilities reported
+* Pipeline continues
+* Image pushed to ECR
 
-Our issue tracker is available [here](https://github.com/spring-projects/spring-petclinic/issues).
+### main Branch
 
-## Database configuration
+Purpose:
 
-In its default configuration, Petclinic uses an in-memory database (H2) which
-gets populated at startup with data. The h2 console is exposed at `http://localhost:8080/h2-console`,
-and it is possible to inspect the content of the database using the `jdbc:h2:mem:<uuid>` URL. The UUID is printed at startup to the console.
+* Production-ready releases
 
-A similar setup is provided for MySQL and PostgreSQL if a persistent database configuration is needed. Note that whenever the database type changes, the app needs to run with a different profile: `spring.profiles.active=mysql` for MySQL or `spring.profiles.active=postgres` for PostgreSQL. See the [Spring Boot documentation](https://docs.spring.io/spring-boot/how-to/properties-and-configuration.html#howto.properties-and-configuration.set-active-spring-profiles) for more detail on how to set the active profile.
+Behavior:
 
-You can start MySQL or PostgreSQL locally with whatever installer works for your OS or use docker:
+* Vulnerabilities scanned
+* CRITICAL findings fail pipeline
+* Prevents vulnerable images from reaching production
 
-```bash
-docker run -e MYSQL_USER=petclinic -e MYSQL_PASSWORD=petclinic -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=petclinic -p 3306:3306 mysql:9.6
-```
+---
 
-or
+## Security Remediation Success
 
-```bash
-docker run -e POSTGRES_USER=petclinic -e POSTGRES_PASSWORD=petclinic -e POSTGRES_DB=petclinic -p 5432:5432 postgres:18.3
-```
+### Initial Findings
 
-Further documentation is provided for [MySQL](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources/db/mysql/petclinic_db_setup_mysql.txt)
-and [PostgreSQL](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources/db/postgres/petclinic_db_setup_postgres.txt).
+* 10 CRITICAL vulnerabilities
+* Multiple HIGH vulnerabilities
 
-Instead of vanilla `docker` you can also use the provided `docker-compose.yml` file to start the database containers. Each one has a service named after the Spring profile:
+### Investigation
 
-```bash
-docker compose up mysql
-```
+* Trivy report analysis
+* Maven dependency tree review
+* Root cause identification
 
-or
+### Remediation
 
-```bash
-docker compose up postgres
-```
+* Spring Boot upgraded from 4.0.3 to 4.0.6
+* Tomcat version overridden to 11.0.22
 
-## Test Applications
+### Final Results
 
-At development time we recommend you use the test applications set up as `main()` methods in `PetClinicIntegrationTests` (using the default H2 database and also adding Spring Boot Devtools), `MySqlTestApplication` and `PostgresIntegrationTests`. These are set up so that you can run the apps in your IDE to get fast feedback and also run the same classes as integration tests against the respective database. The MySql integration tests use Testcontainers to start the database in a Docker container, and the Postgres tests use Docker Compose to do the same thing.
+* CRITICAL vulnerabilities reduced from 10 → 0
+* Production security gate passing
+* Secure image successfully published to AWS ECR
 
-## Compiling the CSS
+---
 
-There is a `petclinic.css` in `src/main/resources/static/resources/css`. It was generated from the `petclinic.scss` source, combined with the [Bootstrap](https://getbootstrap.com/) library. If you make changes to the `scss`, or upgrade Bootstrap, you will need to re-compile the CSS resources using the Maven profile "css", i.e. `./mvnw package -P css`. There is no build profile for Gradle to compile the CSS.
+## Outcomes
 
-## Working with Petclinic in your IDE
+* Containerized Spring Boot application
+* Automated CI/CD workflow
+* Integrated DevSecOps controls
+* OIDC-based AWS authentication
+* Secure image publishing to ECR
+* Vulnerability remediation from 10 CRITICAL findings to 0
 
-### Prerequisites
+---
 
-The following items should be installed in your system:
+## Future Enhancements
 
-- Java 17 or newer (full JDK, not a JRE)
-- [Git command line tool](https://help.github.com/articles/set-up-git)
-- Your preferred IDE
-  - Eclipse with the m2e plugin. Note: when m2e is available, there is a m2 icon in `Help -> About` dialog. If m2e is
-  not there, follow the installation process [here](https://www.eclipse.org/m2e/)
-  - [Spring Tools Suite](https://spring.io/tools) (STS)
-  - [IntelliJ IDEA](https://www.jetbrains.com/idea/)
-  - [VS Code](https://code.visualstudio.com)
-
-### Steps
-
-1. On the command line run:
-
-    ```bash
-    git clone https://github.com/spring-projects/spring-petclinic.git
-    ```
-
-1. Inside Eclipse or STS:
-
-    Open the project via `File -> Import -> Maven -> Existing Maven project`, then select the root directory of the cloned repo.
-
-    Then either build on the command line `./mvnw generate-resources` or use the Eclipse launcher (right-click on project and `Run As -> Maven install`) to generate the CSS. Run the application's main method by right-clicking on it and choosing `Run As -> Java Application`.
-
-1. Inside IntelliJ IDEA:
-
-    In the main menu, choose `File -> Open` and select the Petclinic [pom.xml](pom.xml). Click on the `Open` button.
-
-    - CSS files are generated from the Maven build. You can build them on the command line `./mvnw generate-resources` or right-click on the `spring-petclinic` project then `Maven -> Generates sources and Update Folders`.
-
-    - A run configuration named `PetClinicApplication` should have been created for you if you're using a recent Ultimate version. Otherwise, run the application by right-clicking on the `PetClinicApplication` main class and choosing `Run 'PetClinicApplication'`.
-
-1. Navigate to the Petclinic
-
-    Visit [http://localhost:8080](http://localhost:8080) in your browser.
-
-## Looking for something in particular?
-
-|Spring Boot Configuration | Class or Java property files  |
-|--------------------------|---|
-|The Main Class | [PetClinicApplication](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/java/org/springframework/samples/petclinic/PetClinicApplication.java) |
-|Properties Files | [application.properties](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/resources) |
-|Caching | [CacheConfiguration](https://github.com/spring-projects/spring-petclinic/blob/main/src/main/java/org/springframework/samples/petclinic/system/CacheConfiguration.java) |
-
-## Interesting Spring Petclinic branches and forks
-
-The Spring Petclinic "main" branch in the [spring-projects](https://github.com/spring-projects/spring-petclinic)
-GitHub org is the "canonical" implementation based on Spring Boot and Thymeleaf. There are
-[quite a few forks](https://spring-petclinic.github.io/docs/forks.html) in the GitHub org
-[spring-petclinic](https://github.com/spring-petclinic). If you are interested in using a different technology stack to implement the Pet Clinic, please join the community there.
-
-## Interaction with other open-source projects
-
-One of the best parts about working on the Spring Petclinic application is that we have the opportunity to work in direct contact with many Open Source projects. We found bugs/suggested improvements on various topics such as Spring, Spring Data, Bean Validation and even Eclipse! In many cases, they've been fixed/implemented in just a few days.
-Here is a list of them:
-
-| Name | Issue |
-|------|-------|
-| Spring JDBC: simplify usage of NamedParameterJdbcTemplate | [SPR-10256](https://github.com/spring-projects/spring-framework/issues/14889) and [SPR-10257](https://github.com/spring-projects/spring-framework/issues/14890) |
-| Bean Validation / Hibernate Validator: simplify Maven dependencies and backward compatibility |[HV-790](https://hibernate.atlassian.net/browse/HV-790) and [HV-792](https://hibernate.atlassian.net/browse/HV-792) |
-| Spring Data: provide more flexibility when working with JPQL queries | [DATAJPA-292](https://github.com/spring-projects/spring-data-jpa/issues/704) |
-
-## Contributing
-
-The [issue tracker](https://github.com/spring-projects/spring-petclinic/issues) is the preferred channel for bug reports, feature requests and submitting pull requests.
-
-For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <https://editorconfig.org>. All commits must include a __Signed-off-by__ trailer at the end of each commit message to indicate that the contributor agrees to the Developer Certificate of Origin.
-For additional details, please refer to the blog post [Hello DCO, Goodbye CLA: Simplifying Contributions to Spring](https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring).
-
-## License
-
-The Spring PetClinic sample application is released under version 2.0 of the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
+* SBOM Generation
+* Cosign Image Signing
+* EKS Deployment Stage
+* GitOps using ArgoCD
+* Kubernetes Security Scanning
+* Prometheus and Grafana Monitoring
