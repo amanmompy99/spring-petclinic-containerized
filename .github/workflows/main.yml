@@ -133,8 +133,8 @@ jobs:
           image-ref: ${{ env.IMAGE_URI }}
           format: json
           vuln-type: os,library
-          severity: HIGH,CRITICAL
-          exit-code: 0
+          severity: ${{ github.ref == 'refs/heads/main' && 'CRITICAL' || 'HIGH,CRITICAL' }}
+          exit-code: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
           output: trivy-image-results.json
 
       - name: Upload image scan results
