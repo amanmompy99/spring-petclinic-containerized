@@ -60,13 +60,18 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Run Unit Tests and SonarCloud Scan
+      - name: Run Unit Tests
+        run: ./mvnw test
+
+      - name: SonarCloud Scan
+        if: github.ref == 'refs/heads/main'
         run: |
-          ./mvnw test sonar:sonar \
+          ./mvnw sonar:sonar \
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ secrets.SONAR_ORG }} \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }}
+
 
       # -------------------------------
       # AWS AUTH (MAIN BRANCH ONLY)
