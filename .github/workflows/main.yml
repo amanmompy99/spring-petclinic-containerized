@@ -108,7 +108,7 @@ jobs:
             # PRs and feature branches → local tag only
             docker build \
               -f Dockerfile \
-              -t $ECR_REPOSITORY:$IMAGE_TAG .
+              -t local/$ECR_REPOSITORY:$IMAGE_TAG .
           fi
 
       # -------------------------------
