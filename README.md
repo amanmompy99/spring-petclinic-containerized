@@ -59,6 +59,9 @@ A key focus of this project was implementing DevSecOps best practices through au
 
 ## Architecture
 
+<img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/00128b33-b4e5-4b69-bb58-c68ea70aca94" />
+
+
 Developer → GitHub Repository → GitHub Actions Workflow
 
 GitHub Actions Pipeline:
