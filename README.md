@@ -7,7 +7,24 @@ This project demonstrates the containerization and secure CI/CD implementation o
 A key focus of this project was implementing DevSecOps best practices through automated security scanning, branch-based security gates, and secretless AWS authentication using GitHub OpenID Connect (OIDC).
 
 ---
+## Architecture
 
+<img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/00128b33-b4e5-4b69-bb58-c68ea70aca94" />
+
+
+Developer → GitHub Repository → GitHub Actions Workflow
+
+GitHub Actions Pipeline:
+
+1. Checkout Source
+2. Maven Build
+3. Unit Tests
+4. SonarCloud Analysis
+5. Trivy Filesystem Scan
+6. Docker Build
+7. Trivy Image Scan
+8. OIDC Authentication to AWS
+9. Push Container Image to ECR
 ## Technologies
 
 * Java 21 (Eclipse Temurin)
@@ -54,27 +71,6 @@ A key focus of this project was implementing DevSecOps best practices through au
 * Secure image publishing to Amazon ECR
 * OIDC-based authentication
 * No long-lived AWS access keys
-
----
-
-## Architecture
-
-<img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/00128b33-b4e5-4b69-bb58-c68ea70aca94" />
-
-
-Developer → GitHub Repository → GitHub Actions Workflow
-
-GitHub Actions Pipeline:
-
-1. Checkout Source
-2. Maven Build
-3. Unit Tests
-4. SonarCloud Analysis
-5. Trivy Filesystem Scan
-6. Docker Build
-7. Trivy Image Scan
-8. OIDC Authentication to AWS
-9. Push Container Image to ECR
 
 ---
 
