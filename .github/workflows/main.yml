@@ -120,7 +120,7 @@ jobs:
           image-ref: |
             ${{ github.ref == 'refs/heads/main' && github.event_name == 'push'
                 && format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, env.ECR_REPOSITORY, github.sha)
-                || format('local/{0}:{1}', env.ECR_REPOSITORY, github.sha) }}
+                || format('docker.io/local/{0}:{1}', env.ECR_REPOSITORY, github.sha) }}
           format: json
           vuln-type: os,library
           severity: HIGH,CRITICAL
