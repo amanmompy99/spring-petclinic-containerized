@@ -111,16 +111,24 @@ jobs:
               -t localhost/$ECR_REPOSITORY:$IMAGE_TAG .
           fi
 
+      - name: Set image URI for scanning
+        run: |
+          if [ "${GITHUB_REF}" = "refs/heads/main" ] && [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${ECR_REPOSITORY}:${GITHUB_SHA}" >> $GITHUB_ENV
+          else
+            echo "IMAGE_URI=localhost/${ECR_REPOSITORY}:${GITHUB_SHA}" >> $GITHUB_ENV
+          fi
+
       # -------------------------------
       # TRIVY IMAGE SCAN
       # -------------------------------
+      - name: List Docker images
+        run: docker images
+        
       - name: Trivy image scan (final container)
         uses: aquasecurity/trivy-action@v0.35.0
         with:
-          image-ref: |
-            ${{ github.ref == 'refs/heads/main' && github.event_name == 'push'
-                && format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, env.ECR_REPOSITORY, github.sha)
-                || format('localhost/{0}:{1}', env.ECR_REPOSITORY, github.sha) }}
+          image-ref: ${{ env.IMAGE_URI }}
           format: json
           vuln-type: os,library
           severity: HIGH,CRITICAL
