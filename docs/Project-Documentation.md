@@ -15,6 +15,8 @@ A major focus of the project was vulnerability management. Security findings dis
 ## Architecture Diagram
 
 ![Architecture Diagram](images/architecture-diagram.png)
+<img width="1536" height="1024" alt="Architecture" src="https://github.com/user-attachments/assets/da5fcb58-f380-47c4-b696-dabba07e2ef2" />
+
 
 ---
 
