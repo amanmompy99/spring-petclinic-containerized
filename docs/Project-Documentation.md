@@ -338,7 +338,7 @@ Scans:
 
 ## Screenshot
 
-![Filesystem Scan](images/trivy-fs-scan.png)
+![Filesystem Scan](images/trivy_artifacts.png)
 
 ---
 
@@ -358,7 +358,7 @@ Scans:
 
 ## Screenshot
 
-![Image Scan](images/trivy-image-scan.png)
+![Image Scan](images/trivy_artifacts.png)
 
 ---
 
@@ -450,10 +450,6 @@ CRITICAL Vulnerabilities: 0
 | High Vulnerabilities     | Multiple | Reduced |
 | Security Gate            | Failed   | Passed  |
 
-## Screenshot
-
-![Vulnerability Remediation](images/vulnerability-remediation.png)
-
 ---
 
 # AWS ECR Integration
@@ -471,7 +467,7 @@ Store container images securely.
 
 ## Screenshot
 
-![AWS ECR Repository](images/ecr-repository.png)
+![AWS ECR Repository](images/ecr_repository.png)
 
 ---
 
@@ -485,17 +481,13 @@ Store container images securely.
 
 ![SonarCloud](images/sonarcloud-dashboard.png)
 
-## Trivy Filesystem Scan
+## Trivy Filesystem/Image Scan
 
-![Trivy Filesystem Scan](images/trivy-fs-scan.png)
-
-## Trivy Image Scan
-
-![Trivy Image Scan](images/trivy-image-scan.png)
+![Trivy Filesystem Scan](images/trivy_artifacts.png)
 
 ## AWS ECR Repository
 
-![AWS ECR Repository](images/ecr-repository.png)
+![AWS ECR Repository](images/ecr_repository.png)
 
 ---
 
