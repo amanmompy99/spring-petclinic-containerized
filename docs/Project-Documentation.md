@@ -208,6 +208,11 @@ docker push <account-id>.dkr.ecr.<region>.amazonaws.com/spring-petclinic
 
 ---
 
+## Screenshot
+
+![GitHub Actions](images/github-actions-success.png)
+
+---
 # Branching Strategy
 
 ## Branch Structure
@@ -336,10 +341,6 @@ Scans:
 * Configuration files
 * Source tree
 
-## Screenshot
-
-![Filesystem Scan](images/trivy_artifacts.png)
-
 ---
 
 ## Container Image Scan
@@ -355,10 +356,6 @@ Scans:
 * OS packages
 * Runtime libraries
 * Container vulnerabilities
-
-## Screenshot
-
-![Image Scan](images/trivy_artifacts.png)
 
 ---
 
@@ -464,29 +461,9 @@ Store container images securely.
 * Version tracking
 * Integration with ECS/EKS
 * Secure image storage
-
-## Screenshot
-
-![AWS ECR Repository](images/ecr_repository.png)
-
 ---
 
-# Screenshots
-
-## GitHub Actions Pipeline
-
-![GitHub Actions](images/github-actions-success.png)
-
-## SonarCloud Dashboard
-
-![SonarCloud](images/sonarcloud-dashboard.png)
-
-## Trivy Filesystem/Image Scan
-
-![Trivy Filesystem Scan](images/trivy_artifacts.png)
-
-## AWS ECR Repository
-
+## Screenshot
 ![AWS ECR Repository](images/ecr_repository.png)
 
 ---
