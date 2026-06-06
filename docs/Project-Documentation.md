@@ -581,7 +581,7 @@ spring-petclinic-containerized
 ├── docs/
 │   ├── Project-Documentation.md
 │   └── images/
-│
+│   └── Security-Remediation.md 
 ├── src/
 │
 ├── Dockerfile
